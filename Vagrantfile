@@ -1,3 +1,12 @@
+require 'json'
+
+settings = JSON.parse(File.read("settings.json")).inject({}) do |new_hash, k_v|
+  key, value = k_v
+
+  new_hash[key.to_sym] = value
+
+  new_hash
+end
 Vagrant::Config.run("2") do |config|
   config.vm.box = "ubuntu/trusty64"
 
@@ -12,13 +21,7 @@ Vagrant::Config.run("2") do |config|
     chef.cookbooks_path = "cookbooks"
     chef.add_recipe("mpd")
     chef.json = {
-      :mpd => {
-        remote_ip: "10.0.0.12",
-        remote_user: "admin"
-        remote_password: "********",
-        remote_share: "Public"
-        remote_music_dir: "Home/Music"
-      }
+      mpd settings
     }
   end
   

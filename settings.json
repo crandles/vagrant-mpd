@@ -1,0 +1,7 @@
+{
+	"remote_ip": "10.0.0.1",
+	"remote_user": "user",
+	"remote_password": "password",
+	"remote_share": "Media",
+	"remote_music_dir": "Path/To/Music"
+}
