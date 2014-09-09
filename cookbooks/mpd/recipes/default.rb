@@ -59,6 +59,7 @@ template "/etc/auto.media-shares" do
     :ntfs_share =>"Public",
     :username => "admin", :password => "tylertyler"
   )
+  # notifies :restart, resources(:service => "autofs")
 end
 
 template "/etc/auto.master" do
@@ -66,14 +67,15 @@ template "/etc/auto.master" do
   mode 0644
   owner "root"
   group "root"
+  # notifies :restart, resources(:service => "autofs")
 end
 
 execute "create autofs dir" do
   command "sudo service autofs restart"
-  command "ls /media/shares/music"
-  command "ls /media/shares/"
+  command "sleep 30"
+  command "ls /media/shares/music/"
+  command "ls /media/shares/Home/Music"
   returns [0, 1]
-  action :run
 end
 =begin
   sudo apt-get install autofs -y
@@ -88,13 +90,70 @@ ln -nsf /media/shares/Home/Music /var/lib/mopidy/media/music
 =end
 
 
-### Setup NAS
+### Setup Icecast2
+
+apt_package "icecast2"
+template "/etc/default/icecast2" do
+  source "default_icecast2.erb"
+  mode 0644
+  owner "root"
+  group "root"
+  # notifies :restart, resources(:service => "icecast2")
+end
+template "/etc/icecast2/icecast.xml" do
+  source "icecast2.xml.erb"
+  mode 0644
+  owner "root"
+  group "root"
+  # notifies :restart, resources(:service => "icecast2")
+end
 
 ### Setup MPD
 apt_package "mpd"
 
+
+template "/etc/mpd.conf" do
+  source "mpd.conf.erb"
+  mode 0644
+  owner "root"
+  group "root"
+end
+
+execute "restore mpd database" do
+  command "sudo service mpd stop" # Stop MPD before replacing its contents!
+  command "if [ -d '/vagrant/data/mpd' ]; then sudo cp -r /vagrant/data/mpd /var/lib; fi"
+  command "sudo chown -R mpd:audio /var/lib/mpd/"
+  command "sudo chown -R mpd:audio /var/log/mpd/"
+  action :run
+end
+
+
+
+execute "restart services" do
+  command "sudo service icecast2 restart"
+  command "ls /media/shares/music/"
+  command "ls /media/shares/Home/Music"
+  command "sudo service mpd start"
+  returns [0,1]
+end
 #### MPD CLIENT ####
 apt_package "mpc"
+
+
+### File Watchers
+apt_package "incron"
+
+execute "configure incron" do
+  command "rm -f /etc/incron.allow"
+  action :run
+end
+
+template "/etc/incron.d/mpd" do
+  source "incron.mpd.erb"
+  mode 0644
+  owner "root"
+  group "root"
+end
 
 
 #### SYSTEM AUDIO SETUP ####

@@ -1,24 +1,27 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
-
 Vagrant::Config.run("2") do |config|
-
-  #config.vm.box = "lucid32"
-  #config.vm.box_url = "http://files.vagrantup.com/lucid32.box"
   config.vm.box = "ubuntu/trusty64"
+
+  config.vm.network :forwarded_port, guest: 8000, host: 8000
+  config.vm.network :forwarded_port, guest: 6600, host: 6600
+
+  hostname = "mpd"
+  config.vm.hostname = hostname
+  config.vm.define hostname.to_sym
 
   config.vm.provision :chef_solo do |chef|
     chef.cookbooks_path = "cookbooks"
     chef.add_recipe("mpd")
     chef.json = {
-      :mopidy => {
-        #:spotify_username => ENV['SPOTIFY_USERNAME'],
-        #:spotify_password => ENV['SPOTIFY_PASSWORD']
+      :mpd => {
+        remote_ip: "10.0.0.12",
+        remote_user: "admin"
+        remote_password: "tylertyler",
+        remote_share: "Public"
+        remote_music_dir: "Home/Music"
       }
     }
   end
   
-  # config.vm.customize ["modifyvm", :id, "--audio", "coreaudio"]
   config.vm.provider :virtualbox do |vb|
     vb.customize ["modifyvm", :id, '--audio', 'coreaudio', '--audiocontroller', 'hda'] # choices: hda sb16 ac97
   end

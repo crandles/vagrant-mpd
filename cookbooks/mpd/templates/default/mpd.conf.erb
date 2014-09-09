@@ -1,0 +1,50 @@
+music_directory         "/media/shares/Home/Music/"
+
+
+playlist_directory              "/var/lib/mpd/playlists"
+db_file                 "/var/lib/mpd/tag_cache"
+log_file                        "/var/log/mpd/mpd.log"
+pid_file                        "/run/mpd/pid"
+state_file                      "/var/lib/mpd/state"
+sticker_file                   "/var/lib/mpd/sticker.sql"
+user                            "mpd"
+bind_to_address         "any"
+save_absolute_paths_in_playlists       "yes"
+#auto_update    "yes" Does not like inotify on remote share
+zeroconf_name                  "Music Player"
+
+
+input {
+    plugin "curl"
+}
+audio_output {
+    type            "alsa"
+    name            "My ALSA Device"
+}
+
+audio_output {
+   type            "shout"
+   encoding        "ogg"                   # optional
+   name            "My Shout Stream"
+   host            "localhost"
+   port            "8000"
+   mount           "/mpd.ogg"
+   quality         "10.0"
+   #bitrate         "128"
+   format          "44100:16:2"
+   protocol        "icecast2"              # optional
+   #user            "source"                # optional
+   password        "hackme"
+   description     "MPD Stream" # optional
+   url             "http://example.com"    # optional
+   genre           "jazz"                  # optional
+   public          "no"                    # optional
+   timeout         "2"                     # optional
+   mixer_type      "software"              # optional
+}
+
+filesystem_charset              "UTF-8"
+#
+# This setting controls the encoding that ID3v1 tags should be converted from.
+#
+id3v1_encoding                  "UTF-8"
