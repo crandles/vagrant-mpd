@@ -15,7 +15,7 @@ Vagrant::Config.run("2") do |config|
       :mpd => {
         remote_ip: "10.0.0.12",
         remote_user: "admin"
-        remote_password: "tylertyler",
+        remote_password: "********",
         remote_share: "Public"
         remote_music_dir: "Home/Music"
       }
