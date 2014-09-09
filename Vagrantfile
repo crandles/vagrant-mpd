@@ -21,7 +21,7 @@ Vagrant::Config.run("2") do |config|
     chef.cookbooks_path = "cookbooks"
     chef.add_recipe("mpd")
     chef.json = {
-      mpd settings
+      mpd: settings
     }
   end
   
