@@ -1,4 +1,4 @@
-music_directory         "/media/shares/Home/Music/"
+music_directory         "/media/remote/music/<%= @remote_music_dir.gsub(/\/?(.*?)\/?$/,'\1')%>/"
 
 
 playlist_directory              "/var/lib/mpd/playlists"
