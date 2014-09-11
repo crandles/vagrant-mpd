@@ -26,6 +26,6 @@ Vagrant::Config.run("2") do |config|
   end
   
   config.vm.provider :virtualbox do |vb|
-    vb.customize ["modifyvm", :id, '--audio', 'coreaudio', '--audiocontroller', 'hda'] # choices: hda sb16 ac97
+    #vb.customize ["modifyvm", :id, '--audio', 'coreaudio', '--audiocontroller', 'hda'] # choices: hda sb16 ac97
   end
 end
