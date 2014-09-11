@@ -44,13 +44,10 @@ end
 
 execute "restart autofs" do
   command "sudo service autofs restart"
-  command "sleep 30"
-  command "sudo service autofs restart"
-  returns [0, 1, 2]
+  action :run
 end
 
 execute "ls music share" do
-  command "sleep 30"
   command "ls /media/remote/music/"
   returns [0, 1, 2]
 end
@@ -87,22 +84,27 @@ template "/etc/mpd.conf" do
   )
 end
 
-execute "restore mpd database" do
-  command "mpc" # trigger the state file to be generated on next start.
-  command "sudo service mpd stop" # Stop MPD before replacing its contents!
-  command "if [ -d '/vagrant/data/mpd' ]; then sudo cp -r /vagrant/data/mpd /var/lib; fi"
-  command "sudo chown -R mpd:audio /var/lib/mpd/"
-  command "sudo chown -R mpd:audio /var/log/mpd/"
-  action :run
+bash "restore mpd database" do
+  user "root"
+  code <<-EOL
+    mpc # trigger the state file to be generated on next start.
+    sudo service mpd stop # Stop MPD before replacing its contents!
+    if [ -d '/vagrant/data/mpd' ]; then sudo cp -r /vagrant/data/mpd /var/lib; fi
+    sudo chown -R mpd:audio /var/lib/mpd/
+    sudo chown -R mpd:audio /var/log/mpd/
+  EOL
 end
 
 
 
 execute "restart services" do
-  command "sudo service icecast2 restart"
-  command "ls /media/shares/music/"
-  command "ls /media/shares/Home/Music"
-  command "sudo service mpd start"
+  user "root"
+  code <<-EOL
+    sudo service icecast2 restart
+    sudo service mpd start
+    mpc
+    sudo service mpd restart
+  EOL
   returns [0,1]
 end
 
