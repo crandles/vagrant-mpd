@@ -104,6 +104,7 @@ bash "restart services" do
     sudo service mpd start
     mpc
     sudo service mpd restart
+    mpc update
   EOL
   returns [0,1]
 end
