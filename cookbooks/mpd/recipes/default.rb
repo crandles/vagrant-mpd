@@ -97,7 +97,7 @@ end
 
 
 
-execute "restart services" do
+bash "restart services" do
   user "root"
   code <<-EOL
     sudo service icecast2 restart
